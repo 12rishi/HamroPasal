@@ -1,0 +1,15 @@
+import { Request } from "express";
+export interface UserData {
+  userName: string;
+  email: string;
+  id: string;
+}
+export interface AuthRequest extends Request {
+  user: UserData;
+}
+export interface RegisterData {
+  userName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
