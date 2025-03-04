@@ -10,6 +10,9 @@ import Intro from "./pages/Intro/Intro";
 import { Provider } from "react-redux";
 import store from "./store/store";
 import SinglePage from "./pages/SinglePage/SinglePage";
+import Register from "./pages/Auth/Register";
+import About from "./pages/About/About";
+import Footer from "./components/Footer/Footer";
 
 function App() {
   const [animated, setAnimated] = useState(true);
@@ -29,12 +32,15 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/about" element={<About />} />
 
               <Route
                 path="/"
                 element={
                   <HigherOrder>
                     <Home />
+                    <Footer />
                   </HigherOrder>
                 }
               />
@@ -43,6 +49,7 @@ function App() {
                 element={
                   <HigherOrder>
                     <SinglePage />
+                    <Footer />
                   </HigherOrder>
                 }
               />

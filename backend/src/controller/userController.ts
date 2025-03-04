@@ -41,26 +41,31 @@ class UserController {
       },
     });
   }
-  async loginUser(req: Request, res: Response): Promise<void> {
+  async loginUser(req: Request, res: Response): Promise<any> {
     const cleanedData = sanitizeMe(req.body);
     const { email, password } = cleanedData;
+
+    // Validate input
     if (!email || !password) {
-      res.status(400).json({
-        message: "please provide all the credential",
+      return res.status(400).json({
+        message: "Please provide all the credentials",
       });
     }
+
     const user = await User.findOne(email);
     if (!user) {
-      res.status(401).json({
-        message: "unauthorized,please provide your valid credential ",
+      return res.status(401).json({
+        message: "Unauthorized, please provide your valid credentials",
       });
     }
+    //comparing plain password with hashed password
     const checkedPassword = await bcrypt.compare(password, user.password);
     if (!checkedPassword) {
-      res.status(401).json({
-        message: "unauthorized,please provide your valid credential",
+      return res.status(401).json({
+        message: "Unauthorized, please provide your valid credentials",
       });
     }
+    // private key for RSA256 algo
     const privateKey = fs.readFileSync(
       process.env.PRIVATE_KEY as string,
       "utf8"
@@ -68,9 +73,18 @@ class UserController {
     const token = jwt.sign({ id: user.id }, privateKey, {
       algorithm: process.env.ALGO as string | any,
     });
-    res.cookie("token", token);
-    res.status(200).json({
-      message: "successfully login",
+
+    // Set the cookie
+    res.cookie("token", token, {
+      maxAge: 2 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+    return res.status(200).json({
+      message: "Successfully logged in",
+      token: token,
     });
   }
 }

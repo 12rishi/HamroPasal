@@ -7,6 +7,7 @@ import userRoute from "./router/userRoute";
 import "./database/connection";
 import cluster from "cluster";
 import os from "os";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 const app: Application = express();
@@ -27,11 +28,13 @@ if (cluster.isPrimary) {
 } else {
   app.use(
     cors({
-      origin: "*",
-      allowedHeaders: ["POST", "GET", "PATCH", "DELETE", "OPTIONS"],
+      origin: "http://localhost:5173",
+      methods: ["POST", "GET", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true,
     })
   );
-
+  app.use(cookieParser());
   app.use(
     helmet({
       contentSecurityPolicy: {
