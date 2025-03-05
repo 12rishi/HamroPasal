@@ -13,3 +13,13 @@ export interface RegisterData {
   password: string;
   confirmPassword: string;
 }
+export interface ProductData {
+  productName: string;
+  productPrice: number;
+  productPrevPrice: number;
+  description: string;
+  availableColors: string[];
+  keyFeatures: string[];
+  owner: string;
+  productImage: any;
+}

@@ -13,6 +13,8 @@ import SinglePage from "./pages/SinglePage/SinglePage";
 import Register from "./pages/Auth/Register";
 import About from "./pages/About/About";
 import Footer from "./components/Footer/Footer";
+import Contact from "./pages/Contact/Contact";
+import Map from "./components/Map/Map";
 
 function App() {
   const [animated, setAnimated] = useState(true);
@@ -34,6 +36,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/map" element={<Map />} />
 
               <Route
                 path="/"
