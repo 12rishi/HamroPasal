@@ -3,6 +3,7 @@ export interface UserData {
   userName: string;
   email: string;
   id: string;
+  role:string
 }
 export interface AuthRequest extends Request {
   user: UserData;
@@ -22,4 +23,8 @@ export interface ProductData {
   keyFeatures: string[];
   owner: string;
   productImage: any;
+}
+export enum Role {
+  Admin = "admin",
+  Customer = "customer",
 }

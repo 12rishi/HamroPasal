@@ -14,7 +14,7 @@ import {
   indexes: [
     {
       unique: true,
-      fields: ["productId"], // Indexing productId for faster searches
+      fields: ["id"], // Indexing productId for faster searches
     },
   ],
 })
@@ -58,7 +58,7 @@ class Product extends Model {
   declare description: string;
 
   @Column({
-    type: DataType.ARRAY(DataType.STRING),
+    type: DataType.JSON,
     allowNull: false,
   })
   declare availableColors: string[];
@@ -68,7 +68,7 @@ class Product extends Model {
   })
   declare owner: string;
   @Column({
-    type: DataType.ARRAY(DataType.STRING),
+    type: DataType.JSON,
     allowNull: false,
   })
   declare keyFeatures: string[];

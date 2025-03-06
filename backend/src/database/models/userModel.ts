@@ -7,6 +7,7 @@ import {
   Table,
   Unique,
 } from "sequelize-typescript";
+import { Role } from "../../types";
 
 @Table({
   tableName: "users",
@@ -42,5 +43,11 @@ class User extends Model {
     allowNull: false,
   })
   declare password: string;
+  @Column({
+    type: DataType.ENUM(Role.Admin, Role.Customer),
+    allowNull: false,
+    defaultValue: Role.Customer,
+  })
+  declare role: Role;
 }
 export default User;
