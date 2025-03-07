@@ -43,6 +43,7 @@ class UserController {
   }
   async loginUser(req: Request, res: Response): Promise<any> {
     const cleanedData = sanitizeMe(req.body);
+
     const { email, password } = cleanedData;
 
     // Validate input
@@ -52,7 +53,8 @@ class UserController {
       });
     }
 
-    const user = await User.findOne(email);
+    const user = await User.findOne({ where: { email } });
+    console.log("user is ", user);
     if (!user) {
       return res.status(401).json({
         message: "Unauthorized, please provide your valid credentials",

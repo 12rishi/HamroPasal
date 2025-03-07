@@ -11,15 +11,13 @@ import cookieParser from "cookie-parser";
 import redisClient from "./services/redisService";
 import { adminSeeder } from "./adminSeeder";
 import productRoute from "./router/productRouter";
+import cartRoute from "./router/cartRouter";
 
 dotenv.config();
 
 const app: Application = express();
 const PORT: number = Number(process.env.PORT) || 3000;
-const ENV: string = process.env.NODE_ENV || "development"; // Optional environment fallback
-
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+const ENV: string = process.env.NODE_ENV || "development"; // Optional
 
 // Cluster setup for handling multi-core systems
 if (cluster.isPrimary) {
@@ -36,6 +34,8 @@ if (cluster.isPrimary) {
     cluster.fork(); // Fork a new worker to replace the one that died
   });
 } else {
+  app.use(express.urlencoded({ extended: true }));
+  app.use(express.json());
   app.use(
     cors({
       origin: "*",
@@ -46,8 +46,6 @@ if (cluster.isPrimary) {
   );
 
   app.use(cookieParser());
-
-  // Helmet security configuration
   app.use(
     helmet({
       contentSecurityPolicy: {
@@ -69,12 +67,11 @@ if (cluster.isPrimary) {
       noSniff: true,
     })
   );
-
-  app.use(hpp()); // Prevent HTTP Parameter Pollution
-
+  app.use(hpp());
   // Route handler
   app.use("/", userRoute);
   app.use("/", productRoute);
+  app.use("/", cartRoute);
 
   // 404 handler for undefined routes
   app.use((req: Request, res: Response) => {

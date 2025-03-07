@@ -1,3 +1,4 @@
+import React from "react";
 import { useAppSelector } from "../../store/hooks";
 
 import { Link } from "react-router-dom";
@@ -72,4 +73,4 @@ const Cards = () => {
   );
 };
 
-export default Cards;
+export default React.memo(Cards);

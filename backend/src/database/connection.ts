@@ -1,5 +1,8 @@
 import { Sequelize } from "sequelize-typescript";
 import * as dotenv from "dotenv";
+import Cart from "./models/cartModel";
+import User from "./models/userModel";
+import Product from "./models/productModel";
 dotenv.config();
 const sequelize = new Sequelize({
   database: process.env.DB_NAME,
@@ -19,6 +22,16 @@ const sequelize = new Sequelize({
   },
   models: [__dirname + "/models"],
 });
+User.hasMany(Cart, {
+  foreignKey: "userId",
+});
+Cart.belongsTo(User, {
+  foreignKey: "userId",
+});
+Product.hasMany(Cart, {
+  foreignKey: "productId",
+});
+Cart.belongsTo(Product, { foreignKey: "productId" });
 sequelize
   .authenticate()
   .then(() => {

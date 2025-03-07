@@ -11,7 +11,7 @@ class Authentication {
     const publicKey = fs.readFileSync(process.env.PUBLICKEY as any, "utf-8");
     const token: any = req.headers.authorization;
     if (!token) {
-      res.status(401).json({
+      return res.status(401).json({
         message: "unauthorized",
       });
     }
@@ -19,9 +19,9 @@ class Authentication {
       token,
       publicKey,
       { algorithms: [process.env.ALGO as any] },
-      async (err: any, decoded: any): Promise<void> => {
+      async (err: any, decoded: any): Promise<Response | any> => {
         if (err) {
-          res.status(403).json({
+          return res.status(403).json({
             message: "Forbidden",
             error: err.message,
           });
@@ -31,7 +31,7 @@ class Authentication {
           attributes: ["userName", "email", "id"],
         });
         if (!userData) {
-          res.status(403).json({
+          return res.status(403).json({
             message: "Forbidden,user is not found",
           });
         }

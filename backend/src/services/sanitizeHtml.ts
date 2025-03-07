@@ -18,7 +18,7 @@ export function sanitizeMe(data: any) {
 function sanitizeObject(obj: any) {
   let cleanData: any = {};
   for (let [key, value] of Object.entries(obj)) {
-    cleanData[key] = sanitizeHtml(String(value), {
+    cleanData[key] = sanitizeHtml(value as string | number | any, {
       allowedAttributes: {},
       allowedTags: [],
     });

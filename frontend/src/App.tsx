@@ -1,20 +1,22 @@
 import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
-
+import React, { Suspense, useEffect, useState } from "react";
 import "./App.css";
 
-import Login from "./pages/Auth/Login";
+const Login = React.lazy(() => import("./pages/Auth/Login"));
 import HigherOrder from "./components/HOC/HigherOrder";
-import Home from "./pages/Home/Home";
-import { useEffect, useState } from "react";
+const Home = React.lazy(() => import("./pages/Home/Home"));
+
 import Intro from "./pages/Intro/Intro";
 import { Provider } from "react-redux";
 import store from "./store/store";
-import SinglePage from "./pages/SinglePage/SinglePage";
-import Register from "./pages/Auth/Register";
-import About from "./pages/About/About";
+const SinglePage = React.lazy(() => import("./pages/SinglePage/SinglePage"));
+const Register = React.lazy(() => import("./pages/Auth/Register"));
+const About = React.lazy(() => import("./pages/About/About"));
 import Footer from "./components/Footer/Footer";
-import Contact from "./pages/Contact/Contact";
+const Contact = React.lazy(() => import("./pages/Contact/Contact"));
 import Map from "./components/Map/Map";
+import Spinner from "./ui/Spinner/Spinner";
+const AddToCart = React.lazy(() => import("./pages/AddToCart/AddToCart"));
 
 function App() {
   const [animated, setAnimated] = useState(true);
@@ -31,34 +33,50 @@ function App() {
     <>
       {!animated ? (
         <Provider store={store}>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/map" element={<Map />} />
+          <Suspense
+            fallback={
+              <>
+                <Spinner />
+              </>
+            }
+          >
+            <BrowserRouter>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/map" element={<Map />} />
+                <Route
+                  path="/cart"
+                  element={
+                    <HigherOrder>
+                      <AddToCart />
+                    </HigherOrder>
+                  }
+                />
 
-              <Route
-                path="/"
-                element={
-                  <HigherOrder>
-                    <Home />
-                    <Footer />
-                  </HigherOrder>
-                }
-              />
-              <Route
-                path="/product/:id"
-                element={
-                  <HigherOrder>
-                    <SinglePage />
-                    <Footer />
-                  </HigherOrder>
-                }
-              />
-            </Routes>
-          </BrowserRouter>
+                <Route
+                  path="/"
+                  element={
+                    <HigherOrder>
+                      <Home />
+                      <Footer />
+                    </HigherOrder>
+                  }
+                />
+                <Route
+                  path="/product/:id"
+                  element={
+                    <HigherOrder>
+                      <SinglePage />
+                      <Footer />
+                    </HigherOrder>
+                  }
+                />
+              </Routes>
+            </BrowserRouter>
+          </Suspense>
         </Provider>
       ) : (
         <>

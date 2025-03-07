@@ -3,7 +3,7 @@ export interface UserData {
   userName: string;
   email: string;
   id: string;
-  role:string
+  role: string;
 }
 export interface AuthRequest extends Request {
   user: UserData;
@@ -27,4 +27,9 @@ export interface ProductData {
 export enum Role {
   Admin = "admin",
   Customer = "customer",
+}
+export interface ICart {
+  productId: number;
+  quantity: number;
+  userId?: number;
 }

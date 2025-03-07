@@ -13,7 +13,7 @@ export async function getRedisData(hash: string, key: string) {
 }
 export async function setRedisData(hash: string, key: string, value: any) {
   await redisClient.hSet(hash, key, value);
-  await redisClient.expire(hash, 60 * 60 * 24);
+  await redisClient.expire(hash, 60);
   return;
 }
 export async function deleteRedisData(hash: string, key: string) {
