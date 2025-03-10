@@ -12,6 +12,8 @@ import redisClient from "./services/redisService";
 import { adminSeeder } from "./adminSeeder";
 import productRoute from "./router/productRouter";
 import cartRoute from "./router/cartRouter";
+import { Server } from "socket.io";
+import socketController from "./controller/socketController";
 
 dotenv.config();
 
@@ -81,13 +83,29 @@ if (cluster.isPrimary) {
   });
 
   // Connect Redis before starting the server
+  let server;
   redisClient
     .connect()
     .then(() => {
-      app.listen(PORT, () => {
-        console.log(`Server has started at port no ${PORT} in ${ENV} mode`);
-        adminSeeder();
+      return new Promise(async (resolve, reject) => {
+        const server = app.listen(PORT, () => {
+          console.log(`Server has started at port no ${PORT} in ${ENV} mode`);
+
+          adminSeeder();
+          resolve(server);
+        });
       });
+    })
+    .then((server) => {
+      server = server;
+      //@ts-ignore
+      const io = new Server(server, {
+        cors: {
+          origin: "*",
+          methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+        },
+      });
+      socketController(io);
     })
     .catch((error) => {
       console.error("Error connecting to Redis:", error);

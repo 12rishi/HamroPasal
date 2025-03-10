@@ -145,22 +145,48 @@ class ProductController {
   }
 
   async getProduct(req: AuthRequest, res: Response) {
-    const pageNumber = Number(req.query.page) || 1;
-    const limit = 10;
-    const offset = (pageNumber - 1) * limit;
-    const [product, totalCount] = await Promise.all([
-      await Product.findAll({ limit, offset }),
-      await Product.count(),
-    ]);
-    const totalPage = totalCount / limit;
-    return res.status(200).json({
-      message: "successfully fetched the data",
-      data: {
-        product,
-        totalPage,
-        currentPage: pageNumber,
-      },
-    });
+    try {
+      const pageNumber = Number(req.query.page) || 1;
+      const limit = 10;
+      const offset = (pageNumber - 1) * limit;
+
+      // Fetch products and total count
+      const [products, totalCount] = await Promise.all([
+        Product.findAll({ limit, offset }),
+        Product.count(),
+      ]);
+
+      // Parse productImage, keyFeatures, and availableColors into object/array form
+      const parsedProducts = products.map((product) => ({
+        ...product.toJSON(), // Convert Sequelize instance to plain object
+        productImage:
+          typeof product.productImage === "string"
+            ? JSON.parse(product.productImage)
+            : product.productImage,
+        keyFeatures:
+          typeof product.keyFeatures === "string"
+            ? JSON.parse(product.keyFeatures)
+            : product.keyFeatures,
+        availableColors:
+          typeof product.availableColors === "string"
+            ? JSON.parse(product.availableColors)
+            : product.availableColors,
+      }));
+
+      const totalPages = Math.ceil(totalCount / limit);
+
+      return res.status(200).json({
+        message: "Successfully fetched the data",
+        data: {
+          product: parsedProducts,
+          totalPages,
+          currentPage: pageNumber,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      return res.status(500).json({ message: "Internal server error", error });
+    }
   }
   async updateProduct(req: AuthRequest, res: Response): Promise<Response> {
     const { id } = req.params;

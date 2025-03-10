@@ -1,44 +1,15 @@
 import { useEffect, useState } from "react";
-import { setProduct } from "../../store/productSlice";
+import { fetchProduct, setProduct } from "../../store/productSlice";
 import { useAppdispatch, useAppSelector } from "../../store/hooks";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const { cartItem } = useAppSelector((store) => store.cart);
   const dispatch = useAppdispatch();
-  const product = [
-    {
-      productId: 1,
-      productName: "Wireless Mouse",
-      productPrice: 25.99,
-      productImages: [
-        "/productImage/blackMouse.avif",
-        "/productImage/grayMouse.avif",
-        "/productImage/blueMouse.avif",
-      ],
-      productDescription:
-        "A high-precision wireless mouse with ergonomic design.",
-      availableColor: ["black", "gray", "blue"],
-      category: "Electronics",
-    },
-    {
-      productId: 2,
-      productName: "Mechanical Keyboard",
-      productPrice: 75.49,
-      productImages: [
-        "/productImage/blackKeyboard.avif",
-        "/productImage/pinkKeyboard.avif",
-        "/productImage/whiteKeyboard.avif",
-      ],
-      productDescription: "RGB backlit mechanical keyboard with blue switches.",
-      availableColor: ["black", "white", "pink"],
-      category: "Electronics",
-    },
-  ];
-
+  const { pageNumber } = useAppSelector((store) => store.product);
+  const { cartItem } = useAppSelector((store) => store.cart);
   useEffect(() => {
-    dispatch(setProduct(product));
+    dispatch(fetchProduct(pageNumber));
   }, []);
 
   return (
