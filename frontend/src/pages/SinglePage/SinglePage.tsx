@@ -3,11 +3,12 @@ import Navbar from "../../components/Navbar/Navbar";
 import { useAppdispatch, useAppSelector } from "../../store/hooks";
 import { useParams, useSearchParams } from "react-router-dom";
 import { fetchSingleProduct } from "../../store/productSlice";
-import { setCart } from "../../store/cartSlice";
+import { addToCart, setCart } from "../../store/cartSlice";
 import { CartData } from "../../types";
 
 const SinglePage = () => {
   const { id } = useParams();
+  console.log(typeof id);
   const { cartItem } = useAppSelector((store) => store.cart);
   const [quantity, setQuantity] = useState<number>(1);
   const dispatch = useAppdispatch();
@@ -16,42 +17,38 @@ const SinglePage = () => {
     quantity: null,
   });
   const { singleProduct } = useAppSelector((store) => store.product);
+  console.log("singleProduct is", singleProduct);
   const [imgIndex, setImgIndex] = useState<number>(0);
 
   const handleIncrement = (e: ChangeEvent<HTMLInputElement>) => {
     setQuantity(Number(e.target.value));
-    console.log(quantity);
   };
   const handleAddTocart = () => {
-    if (id) {
-      const data: CartData = { productId: id, quantity };
-      dispatch(setCart(data));
-      console.log(cartItem);
-    }
+    dispatch(addToCart({ id, quantity } as { id: string; quantity: number }));
   };
   useEffect(() => {
     dispatch(fetchSingleProduct(Number(id)));
+    console.log("singlepage is hit");
   }, []);
 
   return (
     <>
-      <Navbar />
       <div className="bg-gray-100">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-wrap -mx-4">
             {/* Product Images */}
             <div className="w-full md:w-1/2 px-4 mb-8">
               <img
-                src={singleProduct?.productImages[imgIndex]}
+                src={singleProduct?.productImage[imgIndex].data}
                 alt="Product"
                 className="w-full h-[90vh] object-cover rounded-lg shadow-md mb-4"
                 id="mainImage"
               />
               <div className="flex gap-4 py-4 justify-center overflow-x-auto">
                 {singleProduct &&
-                  singleProduct.productImages.map((img, index) => (
+                  singleProduct.productImage.map((img, index) => (
                     <img
-                      src={img}
+                      src={img.data}
                       onClick={() => setImgIndex(index)}
                       className="size-16 sm:size-20 object-cover rounded-md cursor-pointer opacity-60 hover:opacity-100 transition duration-300"
                     />
@@ -96,7 +93,7 @@ const SinglePage = () => {
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-2">Color:</h3>
                 <div className="flex space-x-2">
-                  {singleProduct?.availableColor.map((color, index) => (
+                  {singleProduct?.availableColors.map((color, index) => (
                     <button
                       style={{ backgroundColor: color }}
                       className={` btn w-8 h-8 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black`}

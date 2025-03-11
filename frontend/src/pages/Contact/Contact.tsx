@@ -10,7 +10,6 @@ const Contact = () => {
 
   return (
     <>
-      <Navbar />
       <section className="bg-gray-100">
         <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:py-20 lg:px-8">
           <div className="max-w-2xl lg:max-w-4xl mx-auto text-center">

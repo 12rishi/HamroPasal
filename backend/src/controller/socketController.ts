@@ -8,12 +8,15 @@ import User from "../database/models/userModel";
 import Cart from "../database/models/cartModel";
 import redisClient, { setRedisData } from "../services/redisService";
 import Product from "../database/models/productModel";
+import { decode } from "punycode";
 dotenv.config();
 
 const socketController = (io: any) => {
   io.on("connection", async (socket: any) => {
+    console.log("socket id is", socket.id);
+    let token;
     if (socket.handshake.auth.token) {
-      const { token } = socket.handshake.auth as { token: string };
+      token = socket.handshake.auth?.token as string;
       if (!token || token === "" || token === undefined) {
         socket.emit("unauthorized", {
           message: "Unauthorized",
@@ -28,6 +31,7 @@ const socketController = (io: any) => {
     const decoded = await promisify(jwt.verify)(token, publicKey, {
       algorithms: [process.env.ALGO as any],
     });
+    console.log("decoded value is", decoded);
     if (!decoded) {
       socket.emit("unauthorized", {
         message: "Unauthorized",
@@ -37,7 +41,8 @@ const socketController = (io: any) => {
       return;
     }
     //@ts-ignore
-    const userExist = await User.findByID(decoded.id);
+    const userExist = await User.findByPk(decoded.id);
+
     if (!userExist) {
       socket.emit("unauthorized", {
         message: "Unauthorized",

@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CartData } from "../types";
+import { CartData, STATUS } from "../types";
 
-import { PrunePayload } from "vite";
+import { AppDispatch } from "./store";
+import { API } from "../services/api";
 interface InitialState {
   cartItem: CartData[];
   status: string;
@@ -20,19 +21,8 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: initialState,
   reducers: {
-    setCart(state: InitialState, action: PayloadAction<CartData>) {
-      if (
-        state.cartItem.find(
-          (cart) => cart.productId == action.payload.productId
-        )
-      ) {
-        const index = state.cartItem.findIndex(
-          (cart) => cart.productId == action.payload.productId
-        );
-        state.cartItem[index].quantity += 1;
-      } else {
-        state.cartItem.push(action.payload);
-      }
+    setCart(state: InitialState, action: PayloadAction<CartData[]>) {
+      state.cartItem = action.payload;
     },
     setStatus(state: InitialState, action: PayloadAction<string>) {
       state.status = action.payload;
@@ -43,3 +33,47 @@ const cartSlice = createSlice({
 });
 export const { setCart, setStatus, updateCart } = cartSlice.actions;
 export default cartSlice.reducer;
+export function addToCart(data: { id: string; quantity: number }) {
+  return async function addTocartThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(STATUS.LOADING));
+    try {
+      const response = await API.post<any>(
+        "/cart",
+        { productId: data.id, quantity: data.quantity },
+        {
+          headers: {
+            Authorization: `${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.status === 201) {
+        dispatch(setStatus(STATUS.SUCCESS));
+        dispatch(setCart(response.data.data));
+      } else {
+        dispatch(setStatus(STATUS.CLIENTERROR));
+      }
+    } catch (error) {
+      dispatch(setStatus(STATUS.SERVERERROR));
+    }
+  };
+}
+export function getCart() {
+  return async function getCartThunk(dispatch: AppDispatch) {
+    dispatch(setStatus(STATUS.LOADING));
+    try {
+      const response = await API.get<any>("/cart", {
+        headers: {
+          Authorization: `${localStorage.getItem("token")}`,
+        },
+      });
+      if (response.status === 200) {
+        dispatch(setStatus(STATUS.SUCCESS));
+        dispatch(setCart(response.data.data));
+      } else {
+        dispatch(setStatus(STATUS.CLIENTERROR));
+      }
+    } catch (error) {
+      dispatch(setStatus(STATUS.SERVERERROR));
+    }
+  };
+}

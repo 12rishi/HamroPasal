@@ -42,6 +42,8 @@ class UserController {
     });
   }
   async loginUser(req: Request, res: Response): Promise<any> {
+    console.log("login user hit");
+    console.log("req.body is", req.body);
     const cleanedData = sanitizeMe(req.body);
 
     const { email, password } = cleanedData;

@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Router, Routes } from "react-router-dom";
 import React, { Suspense, useEffect, useState } from "react";
+import io from "socket.io-client";
 import "./App.css";
 
 const Login = React.lazy(() => import("./pages/Auth/Login"));
@@ -16,8 +17,15 @@ import Footer from "./components/Footer/Footer";
 const Contact = React.lazy(() => import("./pages/Contact/Contact"));
 import Map from "./components/Map/Map";
 import Spinner from "./ui/Spinner/Spinner";
-const AddToCart = React.lazy(() => import("./pages/AddToCart/AddToCart"));
+import Navbar from "./components/Navbar/Navbar";
 
+const AddToCart = React.lazy(() => import("./pages/AddToCart/AddToCart"));
+export const socket = io("http://localhost:3000", {
+  auth: { token: `${localStorage.getItem("token")}` },
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 8000,
+});
 function App() {
   const [animated, setAnimated] = useState(true);
   function animate() {
@@ -41,6 +49,7 @@ function App() {
             }
           >
             <BrowserRouter>
+              <Navbar />
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />

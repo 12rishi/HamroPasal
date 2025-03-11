@@ -27,6 +27,7 @@ class Authentication {
           });
         }
         const decodedData = decoded.id;
+        console.log("decoded data is", decodedData);
         const userData: UserData | any = await User.findByPk(decodedData, {
           attributes: ["userName", "email", "id"],
         });

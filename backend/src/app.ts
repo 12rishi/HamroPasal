@@ -40,7 +40,7 @@ if (cluster.isPrimary) {
   app.use(express.json());
   app.use(
     cors({
-      origin: "*",
+      origin: "http://localhost:5173",
       methods: ["POST", "GET", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true, // To support cookies
@@ -103,6 +103,7 @@ if (cluster.isPrimary) {
         cors: {
           origin: "*",
           methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+          credentials: true,
         },
       });
       socketController(io);

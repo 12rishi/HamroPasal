@@ -8,6 +8,7 @@ interface IimageType {
   public_id: string;
 }
 interface Product {
+  id?: number;
   productId: number;
   productName: string;
   productPrice: number;
@@ -45,7 +46,7 @@ const productSlice = createSlice({
       action: PayloadAction<{ id: number }>
     ) {
       const singleProduct = state.products.find(
-        (product) => product.productId == action.payload.id
+        (product) => product.id == action.payload.id
       );
       if (singleProduct) {
         state.singleProduct = singleProduct;

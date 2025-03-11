@@ -3,6 +3,8 @@ import { fetchProduct, setProduct } from "../../store/productSlice";
 import { useAppdispatch, useAppSelector } from "../../store/hooks";
 import { Link } from "react-router-dom";
 
+import { getCart } from "../../store/cartSlice";
+
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const dispatch = useAppdispatch();
@@ -10,6 +12,7 @@ const Navbar = () => {
   const { cartItem } = useAppSelector((store) => store.cart);
   useEffect(() => {
     dispatch(fetchProduct(pageNumber));
+    dispatch(getCart());
   }, []);
 
   return (

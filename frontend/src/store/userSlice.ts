@@ -55,10 +55,11 @@ export function registerUser(data: RegisterData) {
   };
 }
 export function loginUser(data: LoginData) {
-  return async function registerUSerThunk(dispatch: AppDispatch) {
-    const response = await API.post<any>("login", data, {
+  return async function loginUSerThunk(dispatch: AppDispatch) {
+    const response = await API.post<any>("/login", data, {
       withCredentials: true,
     });
+    console.log(response);
     try {
       if (response.status == 200) {
         dispatch(setStatus(STATUS.SUCCESS));

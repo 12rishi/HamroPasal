@@ -21,7 +21,6 @@ const Home = () => {
 
   return (
     <>
-      <Navbar />
       <Background />
       <Hero />
       <Cards />

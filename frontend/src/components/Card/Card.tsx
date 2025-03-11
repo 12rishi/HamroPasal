@@ -25,7 +25,7 @@ const Cards = () => {
           products.length > 0 &&
           products.map((product, index) => (
             <Link
-              to={`product/${product.productId}`}
+              to={`product/${product.id}`}
               key={index}
               className={`flex-shrink-0 m-6 relative overflow-hidden bg-orange-500 rounded-lg max-w-xs shadow-lg group`}
             >

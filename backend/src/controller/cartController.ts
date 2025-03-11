@@ -6,7 +6,8 @@ import { getRedisData, setRedisData } from "../services/redisService";
 
 class CartController {
   async addCart(req: AuthRequest, res: Response): Promise<Response> {
-    const data: ICart[] = sanitizeMe(req.body);
+    const data: ICart[] = await sanitizeMe([req.body]);
+    console.log("data is", data);
 
     for (const item of data) {
       if (!item.quantity || !item.productId || item.quantity <= 0) {
@@ -16,19 +17,32 @@ class CartController {
       }
       (item.userId as number | any) = req.user.id; // Assign userId to each item
     }
-
-    await Cart.sequelize?.transaction(async (t) => {
-      await Cart.bulkCreate(data as any, { transaction: t });
+    const checkCart = await Cart.findOne({
+      where: { userId: req.user.id, productId: data[0].productId },
     });
-    const cartData = await Cart.findAll({ where: { userid: req.user.id } });
+    if (!checkCart) {
+      await Cart.sequelize?.transaction(async (t) => {
+        await Cart.bulkCreate(data as any, { transaction: t });
+      });
+    } else {
+      await Cart.update(
+        { quantity: Number(checkCart.quantity) + Number(data[0].quantity) },
+        { where: { userId: req.user.id, productId: data[0].productId } }
+      );
+    }
+
+    const cartData = await Cart.findAll({ where: { userId: req.user.id } });
     setRedisData("cart", `${req.user.id}`, JSON.stringify(cartData));
 
-    return res.status(201).json({ message: "Cart added successfully" });
+    return res
+      .status(201)
+      .json({ message: "Cart added successfully", data: cartData });
   }
   async getCart(req: AuthRequest, res: Response) {
     const { id } = req.user;
     const cart = await getRedisData("cart", id);
-    if (cart.length > 0) {
+    console.log("cart data is", cart);
+    if (cart && cart.length > 0) {
       console.log("data from cached");
       return res.status(200).json({
         message: "successfully fetched cart item",
