@@ -1,11 +1,32 @@
-import React, { useEffect, useMemo } from "react";
-import Navbar from "../../components/Navbar/Navbar";
-import Footer from "../../components/Footer/Footer";
+import React, { useEffect, useMemo, useState } from "react";
+
 import { useAppdispatch, useAppSelector } from "../../store/hooks";
+import { socket } from "../../App";
+import { deleteCart } from "../../store/cartSlice";
+import Footer from "../../components/Footer/Footer";
 
 const AddToCart = () => {
+  const [socketMSg, setSocketMsg] = useState<{
+    message: string;
+    status: number;
+  } | null>(null);
   const dispatch = useAppdispatch();
   const { cartItem } = useAppSelector((store) => store.cart);
+  const handleRemove = (id: string | number) => {
+    dispatch(deleteCart({ id } as { id: string | number }));
+    socket.emit("deleteCart", { id });
+  };
+  useEffect(() => {
+    if (socket) {
+      socket.on(
+        "resDeleteCart",
+        (data: { message: string; status: number }) => {
+          setSocketMsg(data);
+          console.log(data);
+        }
+      );
+    }
+  }, [socket]);
 
   return (
     <>
@@ -24,7 +45,10 @@ const AddToCart = () => {
                         <a href="#" className="shrink-0 md:order-1">
                           <img
                             className="h-20 w-20 dark:hidden"
-                            src="https://flowbite.s3.amazonaws.com/blocks/e-commerce/imac-front.svg"
+                            src={
+                              data?.Product &&
+                              data?.Product?.productImage[0].data
+                            }
                             alt="imac image"
                           />
                           <img
@@ -65,7 +89,7 @@ const AddToCart = () => {
                               id="counter-input"
                               data-input-counter
                               className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
-                              defaultValue={2}
+                              defaultValue={data.quantity}
                               required
                             />
                             <button
@@ -93,19 +117,14 @@ const AddToCart = () => {
                           </div>
                           <div className="text-end md:order-4 md:w-32">
                             <p className="text-base font-bold text-gray-900 dark:text-white">
-                              $1,499
+                              {data.Product && data.Product.productPrice}
                             </p>
                           </div>
                         </div>
-                        <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
-                          <a
-                            href="#"
-                            className="text-base font-medium text-gray-900 hover:underline dark:text-white"
-                          >
-                            PC system All in One APPLE iMac (2023) mqrq3ro/a,
-                            Apple M3, 24" Retina 4.5K, 8GB, SSD 256GB, 10-core
-                            GPU, Keyboard layout INT
-                          </a>
+                        <div className="w-full min-w-0 h-auto flex-1 space-y-4 md:order-2 md:max-w-md">
+                          <p className="text-sm w-full font-medium text-gray-900  dark:text-white break-words">
+                            {data?.Product && data.Product.description}
+                          </p>
                           <div className="flex items-center gap-4">
                             <button
                               type="button"
@@ -133,6 +152,9 @@ const AddToCart = () => {
                             <button
                               type="button"
                               className="inline-flex items-center text-sm font-medium text-red-600 hover:underline dark:text-red-500"
+                              onClick={() =>
+                                handleRemove(data.id as string | number)
+                              }
                             >
                               <svg
                                 className="me-1.5 h-5 w-5"
@@ -159,7 +181,7 @@ const AddToCart = () => {
                     </div>
                   </div>
                 ))}
-              <div className="hidden xl:mt-8 xl:block">
+              {/* <div className="hidden xl:mt-8 xl:block">
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">
                   People also bought
                 </h3>
@@ -429,7 +451,7 @@ const AddToCart = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
               <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">

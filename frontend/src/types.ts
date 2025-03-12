@@ -1,6 +1,10 @@
+import { Product } from "./store/productSlice";
+
 export interface CartData {
+  id?: string | number;
   productId: string | null;
   quantity: number;
+  Product?: Product;
 }
 export interface LoginData {
   email: string;

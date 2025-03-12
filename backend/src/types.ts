@@ -32,8 +32,9 @@ export interface ICart {
   productId: number;
   quantity: number;
   userId?: number;
+  Product?: ProductData;
 }
 export interface ISocketProductCartData {
   id: number | String;
-  quantity?:number
+  quantity?: number;
 }

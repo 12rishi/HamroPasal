@@ -6,7 +6,10 @@ import dotenv from "dotenv";
 import fs from "fs";
 import User from "../database/models/userModel";
 import Cart from "../database/models/cartModel";
-import redisClient, { setRedisData } from "../services/redisService";
+import redisClient, {
+  deleteRedisData,
+  setRedisData,
+} from "../services/redisService";
 import Product from "../database/models/productModel";
 import { decode } from "punycode";
 dotenv.config();
@@ -65,11 +68,12 @@ const socketController = (io: any) => {
     });
     socket.on("deleteCart", async (data: ISocketProductCartData) => {
       const { id } = data;
-      Cart.destroy({ where: { id } });
+      await Cart.destroy({ where: { id } });
       //now lets update on redis cache
       const cartData = await Cart.findAll({ where: { userid: userExist.id } });
-      await setRedisData("cart", `${userExist.id}`, JSON.stringify(cartData));
-      data;
+      deleteRedisData("cart", `${userExist.id}`);
+      setRedisData("cart", `${userExist.id}`, JSON.stringify(cartData));
+
       socket.emit("resDeleteCart", {
         message: "Cart deleted successfully",
         status: 200,

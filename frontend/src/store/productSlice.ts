@@ -7,13 +7,13 @@ interface IimageType {
   contentType: string;
   public_id: string;
 }
-interface Product {
+export interface Product {
   id?: number;
   productId: number;
   productName: string;
   productPrice: number;
   productImage: IimageType[];
-  productDescription: string;
+  description: string;
   availableColors: string[];
   category: string;
 }

@@ -12,7 +12,10 @@ export async function getRedisData(hash: string, key: string) {
   return data ? JSON.parse(data) : null;
 }
 export async function setRedisData(hash: string, key: string, value: any) {
+  console.log("hash data is", hash, key, value);
   await redisClient.hSet(hash, key, value);
+  const getdata = await redisClient.hGet(hash, key);
+  console.log("hashdata after fetching is", JSON.parse(getdata as any));
   await redisClient.expire(hash, 60);
   return;
 }

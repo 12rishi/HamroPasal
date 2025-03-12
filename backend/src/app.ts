@@ -20,7 +20,6 @@ dotenv.config();
 const app: Application = express();
 const PORT: number = Number(process.env.PORT) || 3000;
 const ENV: string = process.env.NODE_ENV || "development"; // Optional
-
 // Cluster setup for handling multi-core systems
 if (cluster.isPrimary) {
   console.log(`Master ${process.pid} is running`);
@@ -86,12 +85,12 @@ if (cluster.isPrimary) {
   let server;
   redisClient
     .connect()
-    .then(() => {
+    .then(async () => {
       return new Promise(async (resolve, reject) => {
-        const server = app.listen(PORT, () => {
+        const server = app.listen(PORT, async () => {
           console.log(`Server has started at port no ${PORT} in ${ENV} mode`);
-
           adminSeeder();
+
           resolve(server);
         });
       });

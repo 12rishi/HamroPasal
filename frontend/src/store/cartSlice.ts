@@ -8,7 +8,7 @@ interface InitialState {
   status: string;
 }
 interface DeleteCartI {
-  id: string;
+  id: string | number;
 }
 interface UpdateI extends DeleteCartI {
   quantity: number;
@@ -28,10 +28,15 @@ const cartSlice = createSlice({
       state.status = action.payload;
     },
     updateCart(state: InitialState, action: PayloadAction<UpdateI>) {},
-    deleteCart(state: InitialState, action: PayloadAction<UpdateI>) {},
+    deleteCart(state: InitialState, action: PayloadAction<DeleteCartI>) {
+      const findIndex = state.cartItem.findIndex(
+        (cart) => cart.id === action.payload.id
+      );
+      state.cartItem.splice(findIndex, 1);
+    },
   },
 });
-export const { setCart, setStatus, updateCart } = cartSlice.actions;
+export const { setCart, setStatus, updateCart, deleteCart } = cartSlice.actions;
 export default cartSlice.reducer;
 export function addToCart(data: { id: string; quantity: number }) {
   return async function addTocartThunk(dispatch: AppDispatch) {
